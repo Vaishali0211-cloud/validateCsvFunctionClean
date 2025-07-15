@@ -7,13 +7,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("🔍 Function validatecsv executing...")
 
     try:
-        # Get the file content from the request
+        # Read body of the request
         file_bytes = req.get_body()
-        
-        # Read CSV from bytes using pandas
+
+        # TEMPORARY DEBUG LOG: Print part of the request body
+        logging.info(f"📦 Raw body (first 100 bytes): {file_bytes[:100]}")
+
+        # Try reading CSV from request
         df = pd.read_csv(io.BytesIO(file_bytes))
 
-        # Check for required columns
+        # Validation: Check required columns
         if 'EmployeeID' not in df.columns or 'Name' not in df.columns:
             logging.warning("🚫 Invalid CSV: Missing 'EmployeeID' or 'Name'")
             return func.HttpResponse(
