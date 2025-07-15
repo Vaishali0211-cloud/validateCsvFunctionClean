@@ -1,2 +1,2 @@
 azure-functions
-pandas
+pandas==2.2.2
