@@ -7,8 +7,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("validateCsv function triggered.")
 
     try:
+        # Get raw request body
         file_bytes = req.get_body()
-        df = pd.read_csv(io.BytesIO(file_bytes))
+
+        try:
+            # Try reading as bytes (real file)
+            df = pd.read_csv(io.BytesIO(file_bytes))
+        except Exception:
+            # Fallback: decode as string for raw/pasted CSV
+            file_text = file_bytes.decode("utf-8")
+            df = pd.read_csv(io.StringIO(file_text))
 
         if 'EmployeeID' not in df.columns or 'Name' not in df.columns:
             return func.HttpResponse("Invalid CSV: Missing EmployeeID or Name", status_code=400)
